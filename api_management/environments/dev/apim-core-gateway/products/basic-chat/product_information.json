@@ -1,7 +1,7 @@
 {
     "properties": {
-      "displayName": "basic",
-      "description": "Basic plan",
+      "displayName": "basic-chat",
+      "description": "Basic-chat plan",
       "approvalRequired": false,
       "state": "published",
       "subscriptionRequired": true,
