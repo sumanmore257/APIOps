@@ -1,0 +1,41 @@
+name: Enforce Branching Path
+
+on:
+  pull_request:
+    branches:
+      - master
+      - preprod
+      - stg
+      - qa
+      - dev
+
+jobs:
+  check-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Debug Branch Info
+        run: |
+          echo "Base branch: '${{ github.base_ref }}'"
+          echo "Head branch: '${{ github.head_ref }}'"
+
+      - name: Enforce Branching Strategy
+        run: |
+          if [[ "${{ github.base_ref }}" == "master" && "${{ github.head_ref }}" == "preprod" ]]; then
+            echo "PR to master from prerod is allowed."
+            exit 0
+          elif [[ "${{ github.base_ref }}" == "preprod" && "${{ github.head_ref }}" == "stg" ]]; then
+            echo "PR to preprod from staging is allowed."
+            exit 0
+          elif [[ "${{ github.base_ref }}" == "stg" && "${{ github.head_ref }}" == "qa" ]]; then
+            echo "PR to staging from qa is allowed."
+            exit 0
+          elif [[ "${{ github.base_ref }}" == "qa" && "${{ github.head_ref }}" == "dev" ]]; then
+            echo "PR to qa from dev is allowed."
+            exit 0
+          elif [[ "${{ github.base_ref }}" == "dev" ]]; then
+            echo "PR to dev from any branch is allowed."
+            exit 0
+          else
+            echo "PR does not follow the correct branching strategy."
+            exit 1
+          fi

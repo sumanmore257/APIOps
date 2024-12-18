@@ -1,0 +1,76 @@
+name: Deploy to APIM
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - prod
+      - dev
+      - stg
+      - qa
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: "deploy-to-apim"
+      cancel-in-progress: false
+    environment: ${{ 
+      github.ref == 'refs/heads/prod' && 'prod' || 
+      github.ref == 'refs/heads/stg' && 'stg' || 
+      github.ref == 'refs/heads/dev' && 'dev' ||
+      github.ref == 'refs/heads/qa' && 'qa'
+      }}
+    env:
+      RESOURCE_GROUP: ${{ secrets.RESOURCE_GROUP }}
+      SUBSCRIPTION_ID: ${{ secrets.SUBSCRIPTION_ID }}
+      APIM_INSTANCE: ${{ vars.APIM_INSTANCE }}
+      ENVIRONMENT: ${{ vars.ENVIRONMENT }}
+    steps:
+      - name: Print ENVIRONMENT variable
+        run: |
+          echo "Branch: ${{ github.ref }}"
+          echo "Environment: ${{ github.environment }}"
+      
+      - name: 'Az CLI login'
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.CLIENT_ID }}
+          tenant-id: ${{ secrets.TENANT_ID }}
+          subscription-id: ${{ secrets.SUBSCRIPTION_ID }}
+          auth-type: SERVICE_PRINCIPAL
+          enable-AzPSSession: true
+
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Identify changed files
+        id: changed_files
+        run: |
+          git fetch --depth=2 origin master
+          git diff-tree --no-commit-id --name-only --diff-filter=D -r HEAD > api_management/deleted_files.txt
+          cat api_management/deleted_files.txt
+
+      - name: Deploy APIs
+       
+        run: |
+          cd api_management
+          python main.py

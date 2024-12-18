@@ -1,0 +1,24 @@
+<fragment>
+	<retry condition="@(context.Response.StatusCode == 429)" count="3" interval="1" max-interval="10" delta="2">
+	 	<!-- Important Note: We need to preserve the body of request for retries and explicity set it before forwarding the request to backend-->
+		<set-variable name="body" value="@(context.Request.Body.As<string>(preserveContent: true))" />
+		<choose>
+			<when condition="@(context.Response.StatusCode == 429)">
+				<trace source="set-backend policy fragement" severity="information">
+					<message>@(String.Concat("Retrying the request with standby-backend"))</message>
+				</trace>
+				<set-body>@((string)context.Variables["body"])</set-body>
+				<set-backend-service backend-id="@((string)context.Variables["standby-pool"])" />
+				<forward-request timeout="120" fail-on-error-status-code="true" buffer-response="false" />
+			</when>
+			<otherwise>
+				<trace source="set-backend policy fragement" severity="information">
+					<message>@(String.Concat("Backend is set to ::",context.Variables["backend-pool"]))</message>
+				</trace>
+				<set-backend-service backend-id="@((string)context.Variables["backend-pool"])" />
+				<set-body>@((string)context.Variables["body"])</set-body>
+				<forward-request timeout="120" fail-on-error-status-code="true" buffer-response="false" />
+			</otherwise>
+		</choose>
+	</retry>
+</fragment>

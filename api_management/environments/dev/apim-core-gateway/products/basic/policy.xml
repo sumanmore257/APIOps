@@ -1,0 +1,42 @@
+<!--
+    - Policies are applied in the order they appear.
+    - Position <base/> inside a section to inherit policies from the outer scope.
+    - Comments within policies are not preserved.
+-->
+<!-- Add policies as children to the <inbound>, <outbound>, <backend>, and <on-error> elements -->
+<policies>
+    <!-- Throttle, authorize, validate, cache, or transform the requests -->
+    <inbound>
+        <base />
+        <trace source="product policy" severity="information">
+            <message>@("Subscription "+context.Subscription.Name+" called "+context.Product.Name+" product")</message>
+        </trace>
+        <set-variable name="backend-pool" value="aoai-backend-pool" />
+        <set-variable name="standby-pool" value="aoai-standby-pool" />
+        <choose>
+            <when condition="@(context.Request.Headers.GetValueOrDefault("skip-rate-limit") == "true")">
+                <trace source="product policy" severity="information">
+                    <message>"Backend is now set to standby-pool for handling quota spikethrough"</message>
+                </trace>
+                <set-variable name="backend-pool" value="@((string)context.Variables["standby-pool"])" />
+            </when>
+            <otherwise>
+                <azure-openai-token-limit counter-key="@(context.Subscription.Id)" tokens-per-minute="10000" estimate-prompt-tokens="false" remaining-tokens-header-name="x-oai-tpm-remaining-tokens" tokens-consumed-header-name="x-oai-tpm-tokens-consumed" />
+                <quota-by-key calls="5000" renewal-period="3600" counter-key="@(context.Subscription.Id)" />
+            </otherwise>
+        </choose>
+    </inbound>
+    <!-- Control if and how the requests are forwarded to services  -->
+    <backend>
+        <base />
+    </backend>
+    <!-- Customize the responses -->
+    <outbound>
+        <base />
+    </outbound>
+    <!-- Handle exceptions and customize error responses  -->
+    <on-error>
+        <base />
+        <include-fragment fragment-id="replay-on-error" />
+    </on-error>
+</policies>

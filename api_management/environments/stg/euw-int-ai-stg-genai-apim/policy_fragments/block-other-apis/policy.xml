@@ -1,0 +1,25 @@
+<!--
+    IMPORTANT:
+    - Policy fragment are included as-is whenever they are referenced.
+    - If using variables. Ensure they are setup before use.
+    - Copy and paste your code here or simply start coding
+-->
+<fragment>
+	<!--Since this is a generic fragment to disallow APIs, the variable "blockedApis" with specific value of APIs which needs to be blocked
+        should be set at API scope before this policy fragment-->
+	<choose>
+		<when condition="@(context.Variables.GetValueOrDefault<string>("blockedApis")  
+                          .Split(',') 
+                          .Any(blockedApi => context.Request.Url.Path.IndexOf(blockedApi.Trim(), StringComparison.OrdinalIgnoreCase) >= 0))">
+			<return-response>
+				<set-status code="403" reason="Forbidden" />
+				<set-header name="Content-Type" exists-action="override">
+					<value>application/json</value>
+				</set-header>
+				<set-body>{  
+                    "message": "Access to this API is forbidden. Please use correct endpoint to access"  
+                }</set-body>
+			</return-response>
+		</when>
+	</choose>
+</fragment>

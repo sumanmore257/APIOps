@@ -1,0 +1,19 @@
+{
+    "properties": {
+        "type": "Pool",
+        "description": "Creating a pool of backends with backend id deployment-1-0 and deployment-1-1",
+        "pool": {
+            "services": [
+                {
+                    "id": "/subscriptions/9a4d2d39-1755-4be8-8ea6-b3bf32141bf7/resourceGroups/rg-ai-euw-preprod/providers/Microsoft.ApiManagement/service/euw-ext-ai-preprod-genai-apim/backends/ext-ai-preprod-deployment-1-0"
+                },
+                {
+                    "id": "/subscriptions/9a4d2d39-1755-4be8-8ea6-b3bf32141bf7/resourceGroups/rg-ai-euw-preprod/providers/Microsoft.ApiManagement/service/euw-ext-ai-preprod-genai-apim/backends/ext-ai-preprod-deployment-1-1"
+                },
+                {
+                    "id": "/subscriptions/9a4d2d39-1755-4be8-8ea6-b3bf32141bf7/resourceGroups/rg-ai-euw-preprod/providers/Microsoft.ApiManagement/service/euw-ext-ai-preprod-genai-apim/backends/ext-ai-preprod-deployment-1-2"
+                }
+            ]
+        }
+    }
+}

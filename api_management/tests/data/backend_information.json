@@ -1,0 +1,14 @@
+{
+    "test-backend-payg-1": {
+        "properties": {
+            "url": "https://apiops-openai.openai.azure.com/",
+            "protocol": "http"
+        }
+    },
+    "test-backend-payg-2": {
+        "properties": {
+            "url": "https://apiops-openai.openai.azure.com/",
+            "protocol": "http"
+        }
+    }
+}

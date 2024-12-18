@@ -1,0 +1,16 @@
+{
+    "properties": {
+        "type": "Pool",
+        "description": "Creating a pool of backends with backend id test-backend-payg-1 and test-backend-payg-2",
+        "pool": {
+            "services": [
+                {
+                    "id": "/subscriptions/89dfb358-f764-4940-aa9f-68d7ab4b5f6e/resourceGroups/rg-apim-gateway/providers/Microsoft.ApiManagement/service/apim-core-gateway/backends/test-backend-payg-1"
+                },
+                {
+                    "id": "/subscriptions/89dfb358-f764-4940-aa9f-68d7ab4b5f6e/resourceGroups/rg-apim-gateway/providers/Microsoft.ApiManagement/service/apim-core-gateway/backends/test-backend-payg-2"
+                }
+            ]
+        }
+    }
+}

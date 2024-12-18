@@ -1,0 +1,61 @@
+name: Run Integration Tests
+
+on:
+  pull_request:
+    branches:
+      - main
+      - master
+      - dev
+      - prod
+      - stg
+      - qa
+
+  workflow_dispatch:
+      
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build-and-test:
+    name: Build and Run Integration Tests
+    runs-on: ubuntu-latest
+    environment: integration_test
+    env:
+      RESOURCE_GROUP: ${{ secrets.RESOURCE_GROUP }}
+      SUBSCRIPTION_ID: ${{ secrets.SUBSCRIPTION_ID }}
+    steps:
+
+      - name: "Az CLI login"
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.CLIENT_ID }}
+          tenant-id: ${{ secrets.TENANT_ID }}
+          subscription-id: ${{ secrets.SUBSCRIPTION_ID }}
+          auth-type: SERVICE_PRINCIPAL
+          enable-AzPSSession: true
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Load Dependencies
+        shell: bash
+        run: |
+          set -e # fail on error
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Integration Tests
+        shell: bash
+        env:
+          APIM_INSTANCE: ${{ vars.APIM_INSTANCE }}
+          ENVIRONMENT: integration_test
+          RESOURCE_GROUP: ${{ secrets.RESOURCE_GROUP }}
+          SUBSCRIPTION_ID: ${{ secrets.SUBSCRIPTION_ID }}
+        run: |
+          cd api_management
+          pytest tests/integeration/ --cov=.
