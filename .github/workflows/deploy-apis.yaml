@@ -66,7 +66,7 @@ jobs:
       - name: Identify changed files
         id: changed_files
         run: |
-          git fetch --depth=2 origin master
+          git fetch --depth=2 origin main
           git diff-tree --no-commit-id --name-only --diff-filter=D -r HEAD > api_management/deleted_files.txt
           cat api_management/deleted_files.txt
 

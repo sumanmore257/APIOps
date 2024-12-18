@@ -1,0 +1,16 @@
+{
+    "properties": {
+        "type": "Pool",
+        "description": "Creating a pool of backends with backend id standby-openai-deployment-0 and standby-openai-deployment-1",
+        "pool": {
+            "services": [
+                {
+                    "id": "/subscriptions/89dfb358-f764-4940-aa9f-68d7ab4b5f6e/resourceGroups/rg-apim-gateway/providers/Microsoft.ApiManagement/service/apim-core-gateway/backends/standby-openai-deployment-0"
+                },
+                {
+                    "id": "/subscriptions/89dfb358-f764-4940-aa9f-68d7ab4b5f6e/resourceGroups/rg-apim-gateway/providers/Microsoft.ApiManagement/service/apim-core-gateway/backends/standby-openai-deployment-1"
+                }
+            ]
+        }
+    }
+}
