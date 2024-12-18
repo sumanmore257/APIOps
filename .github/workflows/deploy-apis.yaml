@@ -1,4 +1,4 @@
-name: Deploy to API Management
+name: Deploy to APIM
 
 on:
   push:
