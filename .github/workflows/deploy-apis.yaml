@@ -25,6 +25,7 @@ jobs:
       github.ref == 'refs/heads/prod' && 'prod' || 
       github.ref == 'refs/heads/stg' && 'stg' || 
       github.ref == 'refs/heads/dev' && 'dev' ||
+      github.ref == 'refs/heads/main' && 'main' ||
       github.ref == 'refs/heads/qa' && 'qa'
       }}
     env:
